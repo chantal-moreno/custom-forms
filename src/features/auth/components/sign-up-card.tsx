@@ -11,12 +11,17 @@ import { Label } from '@radix-ui/react-label';
 import Logo from '@/assets/logoipsum-223.svg';
 import Image from 'next/image';
 import { SignInFlow } from '../types';
+import { useState } from 'react';
 
 interface SignUpCardProps {
   setState: (state: SignInFlow) => void;
 }
 
 export const SignUpCard = ({ setState }: SignUpCardProps) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   return (
     <Card className="w-full h-full p-8">
       <div className="flex justify-center items-center pb-10">
@@ -38,8 +43,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             <Input
               id="name"
               disabled={false}
-              value=""
-              onChange={() => {}}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Enter your name"
               type="text"
               required
@@ -50,8 +55,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             <Input
               id="email"
               disabled={false}
-              value=""
-              onChange={() => {}}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
               type="email"
               required
@@ -62,8 +67,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
             <Input
               id="password"
               disabled={false}
-              value=""
-              onChange={() => {}}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
               type="password"
               required
