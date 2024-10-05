@@ -29,6 +29,8 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const role = 'user';
+  const status = 'active';
 
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -36,15 +38,13 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
   const onPasswordSignUp = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setPending(true);
-    signIn('password', { name, email, password, flow: 'signUp' })
+    signIn('password', { status, role, name, email, password, flow: 'signUp' })
       .then(() => {
         // Redirect / page after sign up
         router.push('/');
       })
       .catch(() => {
-        setError(
-          'Your password need to have number. capital letter, special character and a minimun length of 6'
-        );
+        setError('Something went wrong');
       })
       .finally(() => {
         setPending(false);
@@ -108,6 +108,10 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
               type="password"
               required
             />
+            <p className="text-xs text-muted-foreground">
+              Min. 6 characters, 1 number, 1 capital letter, 1 special
+              character.
+            </p>
           </div>
           <Button
             type="submit"
