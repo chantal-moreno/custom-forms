@@ -1,3 +1,7 @@
+import { useState } from 'react';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { useRouter } from 'next/navigation';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,16 +14,39 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-label';
 import Logo from '@/assets/logoipsum-223.svg';
 import Image from 'next/image';
+
 import { SignInFlow } from '../types';
-import { useState } from 'react';
+import { TriangleAlert } from 'lucide-react';
 
 interface SignInCardProps {
   setState: (state: SignInFlow) => void;
 }
 
 export const SignInCard = ({ setState }: SignInCardProps) => {
+  const { signIn } = useAuthActions();
+  const router = useRouter();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
+
+  const onPasswordSignIn = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPending(true);
+    signIn('password', { email, password, flow: 'signIn' })
+      .then(() => {
+        // Redirect / page after sign in
+        router.push('/');
+      })
+      .catch(() => {
+        setError('Invalid email or password');
+      })
+      .finally(() => {
+        setPending(false);
+      });
+  };
 
   return (
     <Card className="w-full h-full p-8">
@@ -35,13 +62,19 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
       <CardHeader className="px-0 pt-0 text-center">
         <CardTitle>Sign In</CardTitle>
       </CardHeader>
+      {!!error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <TriangleAlert className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-10">
-        <form className="space-y-6">
+        <form onSubmit={onPasswordSignIn} className="space-y-6">
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              disabled={false}
+              disabled={pending}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
@@ -53,7 +86,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
-              disabled={false}
+              disabled={pending}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
@@ -66,7 +99,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
             variant="action"
             className="w-full"
             size="lg"
-            disabled={false}
+            disabled={pending}
           >
             Sign In
           </Button>
